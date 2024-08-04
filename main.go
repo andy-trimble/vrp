@@ -262,7 +262,7 @@ func savings(routes map[int]*Delivery) []Savings {
 
 // Simple euclidean distance betweeen two points in Cartesian space
 func distance(i, j Point) float64 {
-	return math.Sqrt((i.X-j.X)*(i.X-j.X) + (i.Y-j.Y)*(i.Y-j.Y))
+	return math.Sqrt(math.Pow(i.X-j.X, 2) + math.Pow(i.Y-j.Y, 2))
 }
 
 // Parse an input file, returning a map of Deliveries indexed by ID
