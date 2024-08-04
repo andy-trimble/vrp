@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -178,20 +179,9 @@ func printSolution(drivers []*Driver) {
 
 // Remove a driver from a slice of drivers
 func removeDriver(drivers []*Driver, d Driver) []*Driver {
-	idx := -1
-
-	for i, dr := range drivers {
-		if dr.ID == d.ID {
-			idx = i
-			break
-		}
-	}
-
-	if idx == -1 {
-		return drivers
-	}
-
-	return append(drivers[:idx], drivers[idx+1:]...)
+	return slices.DeleteFunc(drivers, func(driver *Driver) bool {
+		return driver.ID == d.ID
+	})
 }
 
 // Find the index of a delivery in a slice based on ID
