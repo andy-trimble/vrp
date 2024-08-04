@@ -218,7 +218,7 @@ func computeTime(nodes []*Delivery) float64 {
 	}
 
 	time := 0.0
-	for i := 0; i < len(nodes); i++ {
+	for i := range nodes {
 		time += nodes[i].Time
 		if i != (len(nodes) - 1) {
 			time += distance(nodes[i].Destination, nodes[i+1].Source)
