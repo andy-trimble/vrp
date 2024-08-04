@@ -85,7 +85,7 @@ func solve(routes map[int]*Delivery) []*Driver {
 
 			if cost <= MaxTime {
 				driver := Driver{
-					ID:    uuid.Must(uuid.NewV7()).String(),
+					ID:    uuid.Must(uuid.NewV7()).String(), // never use Must in production
 					Route: make([]*Delivery, 0),
 				}
 				driver.Route = append(driver.Route, load1)
