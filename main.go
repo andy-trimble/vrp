@@ -38,13 +38,6 @@ type Savings struct {
 	Amount        float64
 }
 
-// Type used to sort slices of Savings
-type BySaving []Savings
-
-func (s BySaving) Len() int           { return len(s) }
-func (a BySaving) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a BySaving) Less(i, j int) bool { return a[i].Amount < a[j].Amount }
-
 var Depot = Point{X: 0.0, Y: 0.0}
 
 const MaxTime = 12.0 * 60.0
@@ -289,13 +282,13 @@ func parse(fName string) (map[int]*Delivery, error) {
 	ret := make(map[int]*Delivery, 0)
 
 	// Be sure to skip the first line
-	for i := 1; i < len(records); i++ {
-		if len(records[i]) != 3 {
+	for _, rec := range records[1:] {
+		if len(rec) != 3 {
 			return nil, errors.New("improperly formatted input file")
 		}
-		id := records[i][0]
-		source := records[i][1]
-		dest := records[i][2]
+		id := rec[0]
+		source := rec[1]
+		dest := rec[2]
 
 		idInt, err := strconv.Atoi(id)
 		if err != nil {
