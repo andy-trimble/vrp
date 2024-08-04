@@ -156,7 +156,7 @@ func solve(routes map[int]*Delivery) []*Driver {
 		}
 	}
 
-	// Assign all unassigned drivers to individual routes
+	// Assign all unassigned routes to individual drivers
 	for _, load := range routes {
 		if load.Assigned == nil {
 			driver := Driver{
