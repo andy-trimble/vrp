@@ -38,6 +38,7 @@ type Savings struct {
 	Amount        float64 `json:"savings"`
 }
 
+// Type used to sort slices of Savings
 type BySaving []Savings
 
 func (s BySaving) Len() int           { return len(s) }
@@ -60,6 +61,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	drivers := solve(routes)
+	printSolution(drivers)
+}
+
+func solve(routes map[int]*Delivery) []*Driver {
 	s := savings(routes)
 
 	drivers := make([]*Driver, 0)
@@ -69,6 +75,8 @@ func main() {
 		load2 := routes[link.DestinationID]
 
 		switch {
+
+		// Neither load is assigned
 		case load1.Assigned == nil && load2.Assigned == nil:
 			arr := make([]*Delivery, 2)
 			arr[0] = load1
@@ -87,6 +95,8 @@ func main() {
 				load2.Assigned = &driver
 
 			}
+
+		// Load 1 is assigned, but load 2 is not
 		case load1.Assigned != nil && load2.Assigned == nil:
 			driver := load1.Assigned
 			i := indexOf(load1, driver.Route)
@@ -103,6 +113,8 @@ func main() {
 					load2.Assigned = driver
 				}
 			}
+
+		// Load 2 is assigned, but load 1 is not
 		case load1.Assigned == nil && load2.Assigned != nil:
 			driver := load2.Assigned
 			i := indexOf(load2, driver.Route)
@@ -118,6 +130,8 @@ func main() {
 					load1.Assigned = driver
 				}
 			}
+
+		// Both loads are already assigned
 		default:
 			driver1 := load1.Assigned
 			i1 := indexOf(load1, driver1.Route)
@@ -143,7 +157,6 @@ func main() {
 	}
 
 	// Assign all unassigned drivers to individual routes
-	// for load in self.loadByID.values():
 	for _, load := range routes {
 		if load.Assigned == nil {
 			driver := Driver{
@@ -156,15 +169,10 @@ func main() {
 		}
 	}
 
-	// b, err := json.MarshalIndent(routes, "", "  ")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// log.Printf("%s", b)
-
-	printSolution(drivers)
+	return drivers
 }
 
+// Print out the solution in the required format
 func printSolution(drivers []*Driver) {
 	for _, d := range drivers {
 		ids := make([]string, len(d.Route))
@@ -175,6 +183,7 @@ func printSolution(drivers []*Driver) {
 	}
 }
 
+// Remove a driver from a slice of drivers
 func removeDriver(drivers []*Driver, d Driver) []*Driver {
 	idx := -1
 
@@ -192,6 +201,7 @@ func removeDriver(drivers []*Driver, d Driver) []*Driver {
 	return append(drivers[:idx], drivers[idx+1:]...)
 }
 
+// Find the index of a delivery in a slice based on ID
 func indexOf(d *Delivery, arr []*Delivery) int {
 	for i, n := range arr {
 		if n.ID == d.ID {
@@ -201,6 +211,7 @@ func indexOf(d *Delivery, arr []*Delivery) int {
 	return -1
 }
 
+// Compute the total time of a set of deliveries
 func computeTime(nodes []*Delivery) float64 {
 	if len(nodes) == 0 {
 		return 0.0
@@ -220,6 +231,8 @@ func computeTime(nodes []*Delivery) float64 {
 	return time
 }
 
+// Compute the Clark-Wright savings
+// https://web.mit.edu/urban_or_book/www/book/chapter6/6.4.12.html
 func savings(routes map[int]*Delivery) []Savings {
 	savings := make([]Savings, 0)
 
@@ -247,10 +260,12 @@ func savings(routes map[int]*Delivery) []Savings {
 	return savings
 }
 
+// Simple euclidean distance betweeen to points in Cartesian spacd
 func distance(i, j Point) float64 {
 	return math.Sqrt((i.X-j.X)*(i.X-j.X) + (i.Y-j.Y)*(i.Y-j.Y))
 }
 
+// Parse an input file, returning a map of Deliveries indexed by ID
 func parse(fName string) (map[int]*Delivery, error) {
 	f, err := os.Open(fName)
 	if err != nil {
@@ -258,6 +273,7 @@ func parse(fName string) (map[int]*Delivery, error) {
 	}
 	defer f.Close()
 
+	// File is space delimited. Treat as a CSV.
 	reader := csv.NewReader(f)
 	reader.Comma = ' '
 
@@ -286,6 +302,7 @@ func parse(fName string) (map[int]*Delivery, error) {
 			return nil, errors.New("improperly formatted input file")
 		}
 
+		// Parse source and destination coordinates and remove the parentheses
 		sourceCoord := strings.Split(strings.ReplaceAll(strings.ReplaceAll(source, "(", ""), ")", ""), ",")
 		if len(sourceCoord) != 2 {
 			return nil, errors.New("improperly formatted input file")
@@ -295,20 +312,21 @@ func parse(fName string) (map[int]*Delivery, error) {
 			return nil, errors.New("improperly formatted input file")
 		}
 
-		sourceX, err := strconv.ParseFloat(sourceCoord[0], 32)
+		// Convert coordinates into floating points (using float64 cuz no real reason not to)
+		sourceX, err := strconv.ParseFloat(sourceCoord[0], 64)
 		if err != nil {
 			return nil, errors.New("improperly formatted input file")
 		}
-		sourceY, err := strconv.ParseFloat(sourceCoord[1], 32)
+		sourceY, err := strconv.ParseFloat(sourceCoord[1], 64)
 		if err != nil {
 			return nil, errors.New("improperly formatted input file")
 		}
 
-		destX, err := strconv.ParseFloat(destCoord[0], 32)
+		destX, err := strconv.ParseFloat(destCoord[0], 64)
 		if err != nil {
 			return nil, errors.New("improperly formatted input file")
 		}
-		destY, err := strconv.ParseFloat(destCoord[1], 32)
+		destY, err := strconv.ParseFloat(destCoord[1], 64)
 		if err != nil {
 			return nil, errors.New("improperly formatted input file")
 		}
@@ -324,6 +342,8 @@ func parse(fName string) (map[int]*Delivery, error) {
 				Y: destY,
 			},
 		}
+
+		// Precompute the drive time
 		d.Time = distance(d.Source, d.Destination)
 
 		ret[idInt] = &d
