@@ -260,7 +260,7 @@ func savings(routes map[int]*Delivery) []Savings {
 	return savings
 }
 
-// Simple euclidean distance betweeen to points in Cartesian spacd
+// Simple euclidean distance betweeen two points in Cartesian space
 func distance(i, j Point) float64 {
 	return math.Sqrt((i.X-j.X)*(i.X-j.X) + (i.Y-j.Y)*(i.Y-j.Y))
 }
