@@ -195,7 +195,7 @@ func removeDriver(drivers []*Driver, d Driver) []*Driver {
 	}
 
 	if idx == -1 {
-		return nil
+		return drivers
 	}
 
 	return append(drivers[:idx], drivers[idx+1:]...)
