@@ -15,27 +15,27 @@ import (
 )
 
 type Driver struct {
-	ID    string      `json:"id"`
-	Route []*Delivery `json:"-"`
+	ID    string
+	Route []*Delivery
 }
 
 type Point struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
+	X float64
+	Y float64
 }
 
 type Delivery struct {
-	ID          int     `json:"id"`
-	Source      Point   `json:"point"`
-	Destination Point   `json:"destination"`
-	Time        float64 `json:"time"`
-	Assigned    *Driver `json:"driver"`
+	ID          int
+	Source      Point
+	Destination Point
+	Time        float64
+	Assigned    *Driver
 }
 
 type Savings struct {
-	SourceID      int     `json:"source_id"`
-	DestinationID int     `json:"destination_id"`
-	Amount        float64 `json:"savings"`
+	SourceID      int
+	DestinationID int
+	Amount        float64
 }
 
 // Type used to sort slices of Savings
