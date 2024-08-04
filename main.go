@@ -51,7 +51,7 @@ const MaxTime = 12.0 * 60.0
 
 func main() {
 	if len(os.Args) != 2 {
-		log.Fatalf("usage: vrp [file input]")
+		log.Fatal("usage: vrp [file input]")
 	}
 
 	fileName := os.Args[1]
